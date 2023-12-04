@@ -11,7 +11,7 @@ h1{
 }
 
 .board{
-  display: grid;
+  display: grid; 
   grid-template-columns: 100px 100px 100px;
   grid-template-rows: 100px 100px 100px;
   cursor: pointer;
@@ -19,9 +19,17 @@ h1{
 }
 
 .tile{
-  color: currentColor;
+  color: currentColor;/*Same color as the body*/
   font-size: 2em;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.right-border{
+  border-right: 0.2em solid #0074a6;
+}
+
+.bottom-border{
+  border-bottom: 0.2em solid #0074a6;
 }
