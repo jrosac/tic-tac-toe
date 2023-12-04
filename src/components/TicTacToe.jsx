@@ -1,5 +1,7 @@
 import Board from "./Board";
 import { useState, useEffect } from "react";
+import GameOver from "./GameOver";
+import GameState from "./GameState";
 
 const PLAYER_X = "X";
 const PLAYER_O = "O";
@@ -20,15 +22,29 @@ const winningCombinations = [
     {combo:[2,4,6], strikeClass: "strike-diagonal-2"},
 ]
 
-function checkWinner(tiles, setStrikeClass){
-    for(const {combo, strikeClass} of winningCombinations){
-        const tileValue1 = tiles[combo[0]]
-        const tileValue2 = tiles[combo[1]]
-        const tileValue3 = tiles[combo[2]]
-
-        if(tileValue1 !== null && tileValue1 === tileValue2 && tileValue1=== tileValue3){
-            setStrikeClass(strikeClass);
+function checkWinner(tiles, setStrikeClass, setGameState) {
+    for (const { combo, strikeClass } of winningCombinations) {
+      const tileValue1 = tiles[combo[0]];
+      const tileValue2 = tiles[combo[1]];
+      const tileValue3 = tiles[combo[2]];
+  
+      if (
+        tileValue1 !== null &&
+        tileValue1 === tileValue2 &&
+        tileValue1 === tileValue3
+      ) {
+        setStrikeClass(strikeClass);
+        if (tileValue1 === PLAYER_X) {
+          setGameState(GameState.playerXWins);
+        } else {
+          setGameState(GameState.playerOWins);
         }
+        return;
+      }
+    }
+    const areAllTilesFilledIN = tiles.every((tile)=> tile!=null);
+    if(areAllTilesFilledIN){
+        setGameState(GameState.draw)
     }
 }
 
@@ -36,8 +52,13 @@ function TicTacToe(){
     const [tiles,setTiles] = useState(Array(9).fill(null));
     const [playerTurn, setPlayerTurn] = useState(PLAYER_X);
     const [strikeClass, setStrikeClass] = useState();
+    const[gameState, setGameState] = useState(GameState.inProgress);
 
     const handleTileClick = (index) =>{
+        if(gameState!== GameState.inProgress){
+            return;
+        }
+        
         if(tiles[index]!==null){
             return
         }
@@ -54,13 +75,14 @@ function TicTacToe(){
     };
 
     useEffect(()=>{
-        checkWinner(tiles, setStrikeClass);
+        checkWinner(tiles, setStrikeClass, setGameState);
     }, [tiles]);
 
     return(
         <div>
            <h1>Tic Tac Toe</h1>
            <Board playerTurn={playerTurn} tiles ={tiles} onTileClick={handleTileClick} strikeClass={strikeClass}/>
+           <GameOver gameState={gameState}/>
         </div>
     );
 }
